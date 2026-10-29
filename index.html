@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NearBy Electronic Product Finder</title>
+
+    <!-- Leaflet Map CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="owner_wishlist.css">
+</head>
+
+<body>
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<nav>
+
+    <div class="logo">
+        📱 NearBy <span>Electronic</span>
+    </div>
+
+    <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-expanded="false" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+    </button>
+    <ul id="navLinks">
+        <li onclick="goHome()">Home</li>
+        <li onclick="showNearbyShops()">Nearby Shops</li>
+        <li onclick="scrollToComparison()">Compare</li>
+        <li onclick="openWishlist()">Wishlist <span id="wishlistCount" class="nav-count">0</span></li>
+        <li onclick="openDashboard('shop')">Shop Dashboard</li>
+        <li onclick="openDashboard('admin')">Admin</li>
+        <li onclick="showAbout()">About</li>
+        <li><button class="account-button" onclick="openAuthModal()">Sign in</button></li>
+    </ul>
+
+</nav>
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <h1>
+            Find the <span>Best Electronics</span>
+            Near You
+        </h1>
+
+        <p>
+            Search products, compare prices,
+            find nearby shops and buy at the best price.
+        </p>
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search mobile, laptop, TV, camera..."
+                onkeydown="handleSearchKey(event)"
+            />
+
+            <button
+                class="search-btn"
+                onclick="searchProducts()"
+            >
+                🔍 Search
+            </button>
+
+        </div>
+
+        <button
+            class="location-btn"
+            onclick="getUserLocation()"
+        >
+            📍 Use My Current Location
+        </button>
+
+        <p
+            id="locationStatus"
+            style="margin-top:15px;font-size:14px;"
+        ></p>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FEATURED DEALS
+========================= -->
+
+<section class="featured-section">
+    <div class="featured-heading">
+        <div><p class="eyebrow">CURATED FOR YOU</p><h2>Featured deals</h2></div>
+        <button class="text-button" onclick="scrollToComparison()">View all offers →</button>
+    </div>
+    <div class="featured-grid" id="featuredGrid"></div>
+</section>
+
+<!-- =========================
+     TRENDING CATEGORIES
+========================= -->
+
+<section class="categories">
+
+
+    <div class="section-title">
+
+        <p class="eyebrow">EXPLORE WHAT'S TRENDING</p>
+        <h2>Popular Categories</h2>
+
+    </div>
+
+    <div class="category-container">
+
+        <div
+            class="category"
+            onclick="filterCategory('Mobile')"
+        >
+            📱 Mobiles
+        </div>
+
+        <div
+            class="category"
+            onclick="filterCategory('Laptop')"
+        >
+            💻 Laptops
+        </div>
+
+        <div
+            class="category"
+            onclick="filterCategory('TV')"
+        >
+            📺 TVs
+        </div>
+
+        <div
+            class="category"
+            onclick="filterCategory('Headphones')"
+        >
+            🎧 Headphones
+        </div>
+
+        <div
+            class="category"
+            onclick="filterCategory('Camera')"
+        >
+            📷 Cameras
+        </div>
+
+        <div
+            class="category"
+            onclick="filterCategory('Gaming')"
+        >
+            🎮 Gaming
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     PRODUCT SECTION
+========================= -->
+
+<div class="container">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>Electronic Products</h2>
+
+            <p
+                class="result-info"
+                id="resultInfo"
+            >
+                Showing all products
+            </p>
+
+        </div>
+
+        <div class="filter-bar">
+
+            <select
+                id="sortSelect"
+                onchange="sortProducts()"
+            >
+
+                <option value="default">
+                    Sort By
+                </option>
+
+                <option value="priceLow">
+                    Price: Low to High
+                </option>
+
+                <option value="priceHigh">
+                    Price: High to Low
+                </option>
+
+                <option value="rating">
+                    Rating
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+    <div class="advanced-filters">
+        <label>Brand<select id="brandFilter" onchange="applyAdvancedFilters()"><option value="">All brands</option><option>Samsung</option><option>Apple</option><option>HP</option><option>Dell</option><option>Sony</option><option>Canon</option></select></label>
+        <label>Min rating<select id="ratingFilter" onchange="applyAdvancedFilters()"><option value="0">Any rating</option><option value="4.5">4.5+</option><option value="4.7">4.7+</option><option value="4.8">4.8+</option></select></label>
+        <label>Max price<input id="productPriceFilter" type="number" placeholder="e.g. 70000" oninput="applyAdvancedFilters()"></label>
+        <label>Nearby radius<select id="radiusFilter" onchange="applyAdvancedFilters()"><option value="999">Any radius</option><option value="2">Within 2 km</option><option value="5">Within 5 km</option><option value="10">Within 10 km</option></select></label>
+        <button class="filter-reset" onclick="resetAdvancedFilters()">Reset</button>
+    </div>
+
+    <div class="recommendation-panel">
+        <div><p class="eyebrow">SMART MATCH</p><h3>Find the right electronics</h3></div>
+        <div class="recommendation-controls">
+            <label>Budget<input id="recommendBudget" type="number" placeholder="₹ 60000"></label>
+            <label>Category<select id="recommendCategory"><option value="">Any</option><option>Mobile</option><option>Laptop</option><option>TV</option><option>Headphones</option><option>Camera</option><option>Gaming</option></select></label>
+            <button class="primary-btn" onclick="recommendProducts()">Recommend</button>
+        </div>
+        <div id="recommendationResults"></div>
+    </div>
+
+    <div
+        class="products"
+        id="productsContainer"
+    ></div>
+
+
+    <!-- =========================
+         COMPARISON
+    ========================= -->
+
+    <section id="comparisonSection">
+
+        <div class="comparison-header">
+
+            <h2 id="comparisonTitle">
+                Product Comparison
+            </h2>
+
+            <p>
+                Compare prices from nearby electronic shops.
+            </p>
+
+        </div>
+
+
+        <div
+            class="best-deal"
+            id="bestDeal"
+        ></div>
+
+
+        <div class="comparison-toolbar">
+            <label>Max price <input type="number" id="maxPriceFilter" placeholder="No limit" oninput="applyOfferFilters()"></label>
+            <label>Max distance <input type="number" id="maxDistanceFilter" placeholder="km" oninput="applyOfferFilters()"></label>
+            <label class="verified-filter"><input type="checkbox" id="verifiedOnlyFilter" onchange="applyOfferFilters()"> Verified shops only</label>
+        </div>
+
+        <h2 style="margin-bottom:20px;">
+            🏪 Available Shops
+        </h2>
+
+        <div class="comparison-table-wrap" id="comparisonTableWrap"></div>
+
+        <div
+            class="shops"
+            id="shopsContainer"
+        ></div>
+
+
+        <!-- MAP -->
+
+        <div id="mapSection">
+
+            <h2>
+                📍 Shop Locations
+            </h2>
+
+            <div id="map"></div>
+
+        </div>
+
+
+        <!-- REVIEWS -->
+
+        <div class="reviews-section">
+
+            <h2>
+                ⭐ Customer Reviews
+            </h2>
+
+            <div id="reviewsContainer"></div>
+            <form class="verified-review-form" onsubmit="submitVerifiedReview(event)">
+                <h3>Write a verified-shop review</h3>
+                <label>Shop<select id="reviewShop" required><option value="">Choose shop</option><option>City Electronics</option><option>Tech World</option><option>Digital Point</option><option>Smart Electronics</option><option>Future Tech Store</option></select></label>
+                <label>Rating<select id="reviewRating" required><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></label>
+                <label>Review<textarea id="reviewText" required minlength="10" placeholder="Share your experience"></textarea></label>
+                <label class="verified-review-check"><input type="checkbox" required> I purchased from or visited this shop</label>
+                <button class="primary-btn" type="submit">Submit for moderation</button>
+            </form>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<div class="auth-modal" id="authModal" role="dialog" aria-modal="true">
+<div class="auth-card"><div class="auth-header"><h2>Create an account</h2><button class="close-auth" onclick="closeAuthModal()">x</button></div>
+<div class="auth-tabs"><button id="customerTab" class="active" onclick="selectAuthType('customer')">Customer</button><button id="shopTab" onclick="selectAuthType('shop')">Shop owner</button></div>
+<button class="google-btn" onclick="demoGoogleLogin()">Continue with Google</button>
+<form class="auth-form" onsubmit="submitAuth(event)"><label>Email<input type="email" id="authEmail" required placeholder="name@gmail.com"></label>
+<div class="shop-fields" id="shopFields"><label>Shop name<input type="text" id="shopName"></label><label>Business/GST number<input type="text" id="businessNumber"></label><label>Shop photo<input type="file" id="shopPhoto" accept="image/*"></label><button type="button" class="submit-auth" onclick="captureShopLocation()">Capture live shop location</button><div class="verification-note">Shop accounts require live location, a clear shop-name photo, and manual verification.</div></div>
+<button class="submit-auth" type="submit">Verify and continue</button></form></div></div>
+
+<div class="feature-modal" id="featureModal" aria-modal="true" role="dialog">
+    <div class="feature-modal-card">
+        <div class="feature-modal-header"><div><p class="eyebrow" id="featureModalEyebrow">YOUR ACCOUNT</p><h2 id="featureModalTitle">Wishlist</h2></div><button class="close-auth" onclick="closeFeatureModal()">×</button></div>
+        <div id="featureModalContent"></div>
+    </div>
+</div>
+
+<div class="multi-compare-bar" id="multiCompareBar">
+    <span><strong id="multiCompareCount">0</strong> products selected</span>
+    <button class="primary-btn" onclick="openMultiComparison()">Compare selected</button>
+    <button class="compare-clear" onclick="clearProductCompare()">Clear</button>
+</div>
+
+<!-- =========================
+     FOOTER========================= -->
+
+<footer>
+
+    <div class="footer-content">
+
+        <div>
+
+            <h3>
+                📱 NearBy Electronic
+            </h3>
+
+            <p>
+                Find nearby electronics,
+                compare prices and discover
+                the best place to buy.
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <h3>
+                Features
+            </h3>
+
+            <p>
+                Product Search
+            </p>
+
+            <p>
+                Price Comparison
+            </p>
+
+            <p>
+                Nearby Shops
+            </p>
+
+            <p>
+                Reviews & Ratings
+            </p>
+
+            <p>
+                Map & Directions
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <h3>
+                Project
+            </h3>
+
+            <p>
+                Location Based Product Finder
+            </p>
+
+            <p>
+                Smart Shop Recommendation
+            </p>
+
+            <p>
+                Best Price Detection
+            </p>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<!-- Leaflet JS -->
+
+
+
+
+
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+    <script src="features.js"></script>
+    <script src="improvements.js"></script>
+    <script src="owner_wishlist.js"></script>
+</body>
+</html>

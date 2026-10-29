@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Owner Login | NearBy</title>
+  <link rel="stylesheet" href="owner-login.css">
+</head>
+<body>
+  <main class="login-shell">
+    <section class="brand-panel">
+      <a class="brand" href="index.html">📱 NearBy <strong>Electronic</strong></a>
+      <div class="brand-copy"><p class="eyebrow">SHOP OWNER PORTAL</p><h1>Manage your store.<br><span>Grow every sale.</span></h1><p>Keep stock accurate, update prices, and see which deals customers love.</p></div>
+      <div class="trust-row"><span>✓ Inventory tools</span><span>✓ Live analytics</span><span>✓ Verified storefront</span></div>
+    </section>
+    <section class="login-panel">
+      <a class="back-link" href="index.html">← Back to marketplace</a>
+      <form class="login-card" id="ownerLoginForm">
+        <div class="login-icon">🏪</div>
+        <p class="eyebrow">WELCOME BACK</p>
+        <h2>Shop owner login</h2>
+        <p class="login-subtitle">Sign in to manage your products and daily stock.</p>
+        <label>Email address<input type="email" id="ownerEmail" value="owner@nearby.com" required autocomplete="email"></label>
+        <label>Password<div class="password-wrap"><input type="password" id="ownerPassword" value="password123" required autocomplete="current-password"><button type="button" id="togglePassword" aria-label="Show password">◉</button></div></label>
+        <div class="form-meta"><label class="remember"><input type="checkbox" checked> Remember me</label><button type="button" class="forgot">Forgot password?</button></div>
+        <button class="login-button" type="submit">Sign in to dashboard <span>→</span></button>
+        <p class="secure-note">🔒 Demo sign-in is stored locally in this browser.</p>
+      </form>
+    </section>
+  </main>
+  <script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+      const input = document.getElementById('ownerPassword');
+      input.type = input.type === 'password' ? 'text' : 'password';
+      this.textContent = input.type === 'password' ? '◉' : '○';
+    });
+    document.getElementById('ownerLoginForm').addEventListener('submit', function (event) {
+      event.preventEvent?.();
+      event.preventDefault();
+      const email = document.getElementById('ownerEmail').value.trim();
+      if (!email || !document.getElementById('ownerPassword').value) return;
+      sessionStorage.setItem('nearbyOwnerSession', JSON.stringify({ email, name: 'City Electronics', loginAt: new Date().toISOString() }));
+      window.location.href = 'owner-dashboard.html';
+    });
+  </script>
+</body>
+</html>

@@ -58,7 +58,7 @@ function openDashboard(type) {
     if (type === 'shop') {
         if (sessionStorage.getItem('nearbyOwnerSession')) window.location.href = 'owner-dashboard.html';
         else window.location.href = 'owner-login.html';
-    } else if (typeof openAdminDashboard === 'function') openAdminDashboard();
+    } else window.location.href = sessionStorage.getItem('nearbyAdminSession') ? 'admin-dashboard.html' : 'admin-login.html';
 }
 
 function openShopOwnerDashboard() {

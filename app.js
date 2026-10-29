@@ -1926,7 +1926,14 @@ function submitAuth(event){
     event.preventDefault();
     const email = document.getElementById('authEmail').value;
     const shop = document.getElementById('shopFields').classList.contains('visible');
-    alert(shop ? 'Verification submitted for ' + email + '. Admin approval is required.' : 'Verification link sent to ' + email + '.');
+    if(shop){
+        const shopName=document.getElementById('shopName').value.trim();
+        const businessNumber=document.getElementById('businessNumber').value.trim();
+        const applications=JSON.parse(localStorage.getItem('nearbyShopApplications')||'[]');
+        applications.push({shopName:shopName||'Unnamed shop',email,businessNumber,status:'pending',submittedAt:new Date().toISOString()});
+        localStorage.setItem('nearbyShopApplications',JSON.stringify(applications));
+        alert('Verification submitted for ' + email + '. Admin approval is required.');
+    }else alert('Verification link sent to ' + email + '.');
     closeAuthModal();
 }
 // Appended premium experience helpers

@@ -38,7 +38,13 @@
       event.preventDefault();
       const email = document.getElementById('ownerEmail').value.trim();
       if (!email || !document.getElementById('ownerPassword').value) return;
-      sessionStorage.setItem('nearbyOwnerSession', JSON.stringify({ email, name: 'City Electronics', loginAt: new Date().toISOString() }));
+      const applications = JSON.parse(localStorage.getItem('nearbyShopApplications') || '[]');
+      const application = applications.find(item => String(item.email).toLowerCase() === email.toLowerCase());
+      if (email !== 'owner@nearby.com' && (!application || application.status !== 'approved')) {
+        alert(application ? 'Your shop account is pending approval or was not approved yet.' : 'No approved shop account was found for this email.');
+        return;
+      }
+      sessionStorage.setItem('nearbyOwnerSession', JSON.stringify({ email, name: application?.shopName || 'City Electronics', loginAt: new Date().toISOString() }));
       window.location.href = 'owner-dashboard.html';
     });
   </script>

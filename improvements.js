@@ -32,8 +32,17 @@ function searchProducts() {
     container.innerHTML = '<div class="loading-state"><span class="spinner"></span><p>Searching nearby prices...</p></div>';
     window.setTimeout(() => {
         const category = window.activeCategory || '';
-        let result = products.filter(product => !category || product.category === category);
-        if (value) result = result.filter(product => `${product.name} ${product.brand} ${product.category}`.toLowerCase().includes(value));
+        const searchCategory = document.getElementById('searchCategory')?.value || '';
+        const sortMode = document.getElementById('searchSort')?.value || 'relevance';
+        let result = products.filter(product => (!category || product.category === category) && (!searchCategory || product.category === searchCategory));
+        if (value) {
+            const keywords = value.split(/\s+/).filter(Boolean);
+            result = result.filter(product => {
+                const searchable = `${product.name} ${product.brand} ${product.category} ${Object.values(product.specifications || {}).join(' ')}`.toLowerCase();
+                return keywords.every(keyword => searchable.includes(keyword));
+            });
+        }
+        if (sortMode === 'az') result.sort((a, b) => a.name.localeCompare(b.name));
         window.activeProductList = result;
         renderProducts(result);
         updateResultCount(result.length);
@@ -248,12 +257,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function availableSuggestions(query) {
         const term = query.toLowerCase().trim();
+        const keywords = term.split(/\s+/).filter(Boolean);
         const available = products.filter(product => {
             if (typeof getInStockOffers !== 'function') return true;
             return getInStockOffers(product.id).length > 0;
         });
         const matches = term
-            ? available.filter(product => `${product.name} ${product.brand} ${product.category}`.toLowerCase().includes(term))
+            ? available.filter(product => {
+                const searchable = `${product.name} ${product.brand} ${product.category} ${Object.values(product.specifications || {}).join(' ')}`.toLowerCase();
+                return keywords.every(keyword => searchable.includes(keyword));
+            })
             : [...available].sort((a, b) => b.rating - a.rating).slice(0, 6);
         return matches.slice(0, 6);
     }
@@ -268,6 +281,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return String(value).replace(/[&<>"']/g, character => ({
             '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'
         })[character]);
+    }
+
+    function highlightKeywords(text, query) {
+        const safeText = escapeHtml(text);
+        const keywords = String(query || '').trim().split(/\s+/).filter(Boolean);
+        if (!keywords.length) return safeText;
+        let highlighted = safeText;
+        keywords.forEach(keyword => {
+            const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            highlighted = highlighted.replace(new RegExp(`(${escapedKeyword})`, 'gi'), '<mark>$1</mark>');
+        });
+        return highlighted;
     }
 
     function setupSearchSuggestions(input, suggestionsElement, options = {}) {
@@ -305,11 +330,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const history = getSearchHistory().filter(term =>
                 !input.value.trim() || term.toLowerCase().includes(input.value.toLowerCase().trim())
             ).slice(0, MAX_SEARCH_HISTORY);
-            if (!matches.length && !history.length) {
-                closeSuggestions();
-                return;
-            }
-            const historyHtml = history.length
+            const popular = ['Samsung', 'Laptop', 'Sony', 'Camera', 'Gaming'];
+            const popularHtml = !input.value.trim()
+                ? `<div class="suggestion-section-label">Popular searches</div>` +
+                  popular.slice(0, 5).map(term => `<button type="button" class="suggestion-item history-suggestion" role="option" aria-selected="false" data-history="${escapeHtml(term)}">
+                    <span class="suggestion-icon history-icon" aria-hidden="true">↗</span>
+                    <span class="suggestion-copy"><strong>${escapeHtml(term)}</strong><span>Popular search</span></span>
+                    <span class="suggestion-price">Search</span>
+                  </button>`).join('')
+                : '';
+            const historyHtml = history.length && !input.value.trim()
                 ? `<div class="suggestion-section-label">Recent searches <button type="button" class="clear-history-button">Clear</button></div>` +
                   history.map(term => `<button type="button" class="suggestion-item history-suggestion" role="option" aria-selected="false" data-history="${escapeHtml(term)}">
                     <span class="suggestion-icon history-icon" aria-hidden="true">↻</span>
@@ -317,15 +347,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="suggestion-price">Search</span>
                   </button>`).join('')
                 : '';
+            const noResultsHtml = input.value.trim() && !matches.length
+                ? `<div class="no-search-results"><span>⌕</span><strong>No results found</strong><p>Try another product, brand, or category.</p></div>`
+                : '';
             const productsHtml = matches.map((product, index) => {
                 const price = lowestPrice(product);
                 return `<button type="button" class="suggestion-item" role="option" aria-selected="false" data-index="${index}" data-product-id="${product.id}">
                     <span class="suggestion-icon" aria-hidden="true">${product.icon || '📱'}</span>
-                    <span class="suggestion-copy"><strong>${product.name}</strong><span>${product.brand} · ${product.category} · ★ ${product.rating}</span></span>
+                    <span class="suggestion-copy"><strong>${highlightKeywords(product.name, input.value)}</strong><span>${highlightKeywords(product.brand + ' · ' + product.category, input.value)} · ★ ${product.rating}</span></span>
                     <span class="suggestion-price">${price ? '₹' + price.toLocaleString() : 'In stock'}</span>
                 </button>`;
             }).join('');
-            suggestionsElement.innerHTML = historyHtml + (matches.length ? `<div class="suggestion-section-label">Available products</div>` + productsHtml : '');
+            suggestionsElement.innerHTML = historyHtml + popularHtml + (matches.length ? `<div class="suggestion-section-label">Available products</div>` + productsHtml : '') + noResultsHtml;
             suggestionsElement.classList.add('open');
         }
 
@@ -402,6 +435,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroSearchInput = document.getElementById('searchInput');
     setupSearchSuggestions(navSearchInput, document.getElementById('navSuggestions'), { syncNav:true, showWhenEmpty:true });
     setupSearchSuggestions(heroSearchInput, document.getElementById('heroSuggestions'), { showWhenEmpty:false });
+
+    function syncClearButtons() {
+        document.getElementById('navSearchClear')?.classList.toggle('visible', Boolean(navSearchInput?.value));
+        document.getElementById('heroSearchClear')?.classList.toggle('visible', Boolean(heroSearchInput?.value));
+    }
+
+    navSearchInput?.addEventListener('input', syncClearButtons);
+    heroSearchInput?.addEventListener('input', syncClearButtons);
+
+    document.getElementById('navSearchClear')?.addEventListener('click', () => {
+        navSearchInput.value = '';
+        heroSearchInput.value = '';
+        syncClearButtons();
+        renderProducts(products);
+        document.getElementById('navSuggestions')?.classList.remove('open');
+        navSearchInput.focus();
+    });
+
+    document.getElementById('heroSearchClear')?.addEventListener('click', () => {
+        heroSearchInput.value = '';
+        navSearchInput.value = '';
+        syncClearButtons();
+        renderProducts(products);
+        document.getElementById('heroSuggestions')?.classList.remove('open');
+        heroSearchInput.focus();
+    });
+
+    document.getElementById('searchCategory')?.addEventListener('change', searchProducts);
+    document.getElementById('searchSort')?.addEventListener('change', searchProducts);
+    document.getElementById('clearSearchFilters')?.addEventListener('click', () => {
+        navSearchInput.value = '';
+        heroSearchInput.value = '';
+        document.getElementById('searchCategory').value = '';
+        document.getElementById('searchSort').value = 'relevance';
+        window.activeCategory = '';
+        window.activeProductList = products;
+        syncClearButtons();
+        renderProducts(products);
+        showToast('Search filters cleared', 'success');
+    });
+    syncClearButtons();
 
     backToTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     window.addEventListener('scroll', () => backToTop?.classList.toggle('visible', window.scrollY > 480), { passive:true });

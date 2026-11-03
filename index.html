@@ -23,26 +23,41 @@
      NAVBAR
 ========================= -->
 
-<nav>
+<nav class="site-nav" aria-label="Primary navigation">
+    <a class="logo" href="#home" aria-label="NearBy Electronic home">
+        <span class="logo-icon" aria-hidden="true">📱</span>
+        <span>NearBy <b>Electronic</b></span>
+    </a>
 
-    <div class="logo">
-        📱 NearBy <span>Electronic</span>
-    </div>
-
-    <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-expanded="false" onclick="toggleMenu()">
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
         <span></span><span></span><span></span>
     </button>
-    <ul id="navLinks">
-        <li onclick="goHome()">Home</li>
-        <li onclick="showNearbyShops()">Nearby Shops</li>
-        <li onclick="scrollToComparison()">Compare</li>
-        <li onclick="openWishlist()">Wishlist <span id="wishlistCount" class="nav-count">0</span></li>
-        <li onclick="openDashboard('shop')">Shop Dashboard</li>
-        <li onclick="openDashboard('admin')">Admin</li>
-        <li onclick="showAbout()">About</li>
-        <li><button class="account-button" onclick="openAuthModal()">Sign in</button></li>
+
+    <ul id="navLinks" class="nav-links">
+        <li><a href="#home" class="nav-link active" data-nav-target="home">Home</a></li>
+        <li><a href="#categories" class="nav-link" data-nav-target="categories" onclick="showNearbyShops(); return false;">Nearby Shops</a></li>
+        <li><a href="#comparisonSection" class="nav-link" data-nav-target="comparisonSection" onclick="scrollToComparison(); return false;">Compare</a></li>
+        <li class="nav-dropdown">
+            <button class="nav-dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false">
+                Explore <span aria-hidden="true">⌄</span>
+            </button>
+            <ul class="nav-dropdown-menu">
+                <li><a href="#products" onclick="goHome(); return false;">Products</a></li>
+                <li><button type="button" onclick="openWishlist()">Wishlist <span id="wishlistCount" class="nav-count">0</span></button></li>
+                <li><button type="button" onclick="openDashboard('shop')">Shop Dashboard</button></li>
+                <li><button type="button" onclick="openDashboard('admin')">Admin</button></li>
+            </ul>
+        </li>
+        <li><a href="#about" class="nav-link" data-nav-target="about" onclick="showAbout(); return false;">About</a></li>
+        <li><button class="account-button" type="button" onclick="openAuthModal()">Sign in</button></li>
     </ul>
 
+    <form class="nav-search" id="navSearchForm" role="search">
+        <label class="sr-only" for="navSearchInput">Search electronics</label>
+        <input id="navSearchInput" type="search" placeholder="Search products" autocomplete="off">
+        <button type="submit" aria-label="Submit product search">⌕</button>
+        <div class="search-suggestions nav-suggestions" id="navSuggestions" role="listbox" aria-label="Available product suggestions"></div>
+    </form>
 </nav>
 
 
@@ -50,7 +65,7 @@
      HERO
 ========================= -->
 
-<section class="hero">
+<section class="hero" id="home">
 
     <div class="hero-content">
 
@@ -70,7 +85,7 @@
                 type="text"
                 id="searchInput"
                 placeholder="Search mobile, laptop, TV, camera..."
-                onkeydown="handleSearchKey(event)"
+                autocomplete="off"
             />
 
             <button
@@ -79,6 +94,7 @@
             >
                 🔍 Search
             </button>
+            <div class="search-suggestions hero-suggestions" id="heroSuggestions" role="listbox" aria-label="Available product suggestions"></div>
 
         </div>
 
@@ -103,7 +119,7 @@
      FEATURED DEALS
 ========================= -->
 
-<section class="featured-section">
+<section class="featured-section" id="featured">
     <div class="featured-heading">
         <div><p class="eyebrow">CURATED FOR YOU</p><h2>Featured deals</h2></div>
         <button class="text-button" onclick="scrollToComparison()">View all offers →</button>
@@ -115,7 +131,7 @@
      TRENDING CATEGORIES
 ========================= -->
 
-<section class="categories">
+<section class="categories" id="categories">
 
 
     <div class="section-title">
@@ -178,7 +194,7 @@
      PRODUCT SECTION
 ========================= -->
 
-<div class="container">
+<div class="container" id="products">
 
     <div class="section-header">
 
@@ -350,10 +366,12 @@
     <button class="compare-clear" onclick="clearProductCompare()">Clear</button>
 </div>
 
+<button class="back-to-top" id="backToTop" type="button" aria-label="Back to top" title="Back to top">↑</button>
+
 <!-- =========================
      FOOTER========================= -->
 
-<footer>
+<footer id="about">
 
     <div class="footer-content">
 

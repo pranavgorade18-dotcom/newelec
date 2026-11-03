@@ -688,6 +688,9 @@ body { padding-top:0; }
 .search-suggestions.open { display:block; }
 .nav-suggestions { top:46px; left:0; right:0; }
 .hero-suggestions { top:72px; left:8px; right:8px; text-align:left; }
+.suggestion-section-label { display:flex; align-items:center; justify-content:space-between; min-height:34px; padding:7px 12px 5px; color:#64748b; background:#f8fafc; font-size:10px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; border-bottom:1px solid #edf2f7; }
+.clear-history-button { border:0; background:transparent; color:#1677ff; font-size:11px; font-weight:800; text-transform:none; letter-spacing:0; cursor:pointer; padding:2px 4px; }
+.history-suggestion .history-icon { background:#eef6ff; color:#1677ff; }
 .suggestion-item { width:100%; min-height:58px; display:grid; grid-template-columns:42px 1fr auto; align-items:center; gap:10px; border:0; border-bottom:1px solid #edf2f7; background:white; color:#172033; padding:9px 12px; cursor:pointer; text-align:left; }
 .suggestion-item:last-child { border-bottom:0; }
 .suggestion-item:hover, .suggestion-item.highlighted { background:#eff6ff; }

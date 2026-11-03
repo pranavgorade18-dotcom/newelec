@@ -1,5 +1,24 @@
 // Improvements that preserve filtered state and make prototype limitations explicit.
 window.activeProductList = window.activeProductList || products;
+const SEARCH_HISTORY_KEY = 'nearbySearchHistory';
+const MAX_SEARCH_HISTORY = 6;
+
+function getSearchHistory() {
+    try {
+        const history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY) || '[]');
+        return Array.isArray(history) ? history.filter(term => typeof term === 'string' && term.trim()) : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveSearchHistory(term) {
+    const cleanTerm = String(term || '').trim();
+    if (!cleanTerm) return;
+    const history = getSearchHistory().filter(item => item.toLowerCase() !== cleanTerm.toLowerCase());
+    history.unshift(cleanTerm);
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history.slice(0, MAX_SEARCH_HISTORY)));
+}
 
 function updateResultCount(count) {
     const info = document.getElementById('resultInfo');
@@ -8,6 +27,7 @@ function updateResultCount(count) {
 
 function searchProducts() {
     const value = document.getElementById('searchInput').value.toLowerCase().trim();
+    saveSearchHistory(document.getElementById('searchInput').value);
     const container = document.getElementById('productsContainer');
     container.innerHTML = '<div class="loading-state"><span class="spinner"></span><p>Searching nearby prices...</p></div>';
     window.setTimeout(() => {
@@ -220,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const mainSearch = document.getElementById('searchInput');
         if (!mainSearch) return;
         mainSearch.value = query;
+        saveSearchHistory(query);
         searchProducts();
         document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         closeMenu();
@@ -243,6 +264,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return offers.length ? Math.min(...offers.map(offer => offer.price)) : null;
     }
 
+    function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, character => ({
+            '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'
+        })[character]);
+    }
+
     function setupSearchSuggestions(input, suggestionsElement, options = {}) {
         let highlightedIndex = -1;
 
@@ -257,6 +284,17 @@ document.addEventListener('DOMContentLoaded', () => {
             closeSuggestions();
             document.getElementById('searchInput').value = product.name;
             document.getElementById('navSearchInput').value = product.name;
+            saveSearchHistory(product.name);
+            searchProducts();
+            document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function selectHistory(term) {
+            input.value = term;
+            closeSuggestions();
+            document.getElementById('searchInput').value = term;
+            document.getElementById('navSearchInput').value = term;
+            saveSearchHistory(term);
             searchProducts();
             document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -264,11 +302,22 @@ document.addEventListener('DOMContentLoaded', () => {
         function renderSuggestions() {
             const matches = availableSuggestions(input.value);
             highlightedIndex = -1;
-            if (!matches.length) {
+            const history = getSearchHistory().filter(term =>
+                !input.value.trim() || term.toLowerCase().includes(input.value.toLowerCase().trim())
+            ).slice(0, MAX_SEARCH_HISTORY);
+            if (!matches.length && !history.length) {
                 closeSuggestions();
                 return;
             }
-            suggestionsElement.innerHTML = matches.map((product, index) => {
+            const historyHtml = history.length
+                ? `<div class="suggestion-section-label">Recent searches <button type="button" class="clear-history-button">Clear</button></div>` +
+                  history.map(term => `<button type="button" class="suggestion-item history-suggestion" role="option" aria-selected="false" data-history="${escapeHtml(term)}">
+                    <span class="suggestion-icon history-icon" aria-hidden="true">↻</span>
+                    <span class="suggestion-copy"><strong>${escapeHtml(term)}</strong><span>Search history</span></span>
+                    <span class="suggestion-price">Search</span>
+                  </button>`).join('')
+                : '';
+            const productsHtml = matches.map((product, index) => {
                 const price = lowestPrice(product);
                 return `<button type="button" class="suggestion-item" role="option" aria-selected="false" data-index="${index}" data-product-id="${product.id}">
                     <span class="suggestion-icon" aria-hidden="true">${product.icon || '📱'}</span>
@@ -276,6 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="suggestion-price">${price ? '₹' + price.toLocaleString() : 'In stock'}</span>
                 </button>`;
             }).join('');
+            suggestionsElement.innerHTML = historyHtml + (matches.length ? `<div class="suggestion-section-label">Available products</div>` + productsHtml : '');
             suggestionsElement.classList.add('open');
         }
 
@@ -305,6 +355,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const item = highlightedIndex >= 0 ? items[highlightedIndex] : items[0];
                 if (item) {
                     event.preventDefault();
+                    if (item.dataset.history) {
+                        selectHistory(item.dataset.history);
+                        return;
+                    }
                     const product = products.find(candidate => candidate.id === Number(item.dataset.productId));
                     if (product) selectProduct(product);
                     return;
@@ -312,6 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeSuggestions();
                 document.getElementById('searchInput').value = input.value;
                 document.getElementById('navSearchInput').value = input.value;
+                saveSearchHistory(input.value);
                 searchProducts();
                 document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else if (event.key === 'Escape') {
@@ -320,9 +375,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         suggestionsElement.addEventListener('mousedown', event => {
+            const clearButton = event.target.closest('.clear-history-button');
+            if (clearButton) {
+                event.preventDefault();
+                localStorage.removeItem(SEARCH_HISTORY_KEY);
+                renderSuggestions();
+                return;
+            }
             const item = event.target.closest('.suggestion-item');
             if (!item) return;
             event.preventDefault();
+            if (item.dataset.history) {
+                selectHistory(item.dataset.history);
+                return;
+            }
             const product = products.find(candidate => candidate.id === Number(item.dataset.productId));
             if (product) selectProduct(product);
         });

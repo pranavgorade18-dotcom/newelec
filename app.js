@@ -2162,7 +2162,13 @@ function closeAuthModal(){
 function selectAuthType(type){
     document.getElementById('customerTab').classList.toggle('active', type === 'customer');
     document.getElementById('shopTab').classList.toggle('active', type === 'shop');
-    document.getElementById('shopFields').classList.toggle('visible', type === 'shop');
+    const shopMode = type === 'shop';
+    document.getElementById('shopFields').classList.toggle('visible', shopMode);
+    ['shopName', 'businessNumber', 'shopPassword', 'shopPasswordConfirm'].forEach(id => {
+        const field = document.getElementById(id);
+        field.required = shopMode;
+        field.disabled = !shopMode;
+    });
 }
 function demoGoogleLogin(){
     alert('Google/Firebase authentication will connect in production.');

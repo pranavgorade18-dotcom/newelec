@@ -335,7 +335,7 @@
 <div class="auth-tabs"><button id="customerTab" class="active" onclick="selectAuthType('customer')">Customer</button><button id="shopTab" onclick="selectAuthType('shop')">Shop owner</button></div>
 <button class="google-btn" onclick="demoGoogleLogin()">Continue with Google</button>
 <form class="auth-form" onsubmit="submitAuth(event)"><label>Email<input type="email" id="authEmail" required placeholder="name@gmail.com"></label>
-<div class="shop-fields" id="shopFields"><label>Shop name<input type="text" id="shopName"></label><label>Business/GST number<input type="text" id="businessNumber"></label><label>Shop photo<input type="file" id="shopPhoto" accept="image/*"></label><button type="button" class="submit-auth" onclick="captureShopLocation()">Capture live shop location</button><div class="verification-note">Shop accounts require live location, a clear shop-name photo, and manual verification.</div></div>
+<div class="shop-fields" id="shopFields"><label>Shop name<input type="text" id="shopName" autocomplete="organization"></label><label>Business/GST number<input type="text" id="businessNumber"></label><label>Create password<input type="password" id="shopPassword" minlength="8" autocomplete="new-password"></label><label>Confirm password<input type="password" id="shopPasswordConfirm" minlength="8" autocomplete="new-password"></label><label>Shop photo<input type="file" id="shopPhoto" accept="image/*"></label><button type="button" class="submit-auth" onclick="captureShopLocation()">Capture live shop location</button><div class="verification-note">Shop applications require admin approval. Browser-only demo accounts are not secure or shared across devices.</div></div>
 <button class="submit-auth" type="submit">Verify and continue</button></form></div></div>
 
 <div class="feature-modal" id="featureModal" aria-modal="true" role="dialog">
@@ -438,6 +438,7 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="catalog.js"></script>
+    <script src="owner-auth.js"></script>
     <script src="app.js"></script>
     <script src="features.js"></script>
     <script src="improvements.js"></script>

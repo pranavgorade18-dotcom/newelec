@@ -19,34 +19,74 @@
         <p class="eyebrow">WELCOME BACK</p>
         <h2>Shop owner login</h2>
         <p class="login-subtitle">Sign in to manage your products and daily stock.</p>
-        <label>Email address<input type="email" id="ownerEmail" value="owner@nearby.com" required autocomplete="email"></label>
-        <label>Password<div class="password-wrap"><input type="password" id="ownerPassword" value="password123" required autocomplete="current-password"><button type="button" id="togglePassword" aria-label="Show password">◉</button></div></label>
-        <div class="form-meta"><label class="remember"><input type="checkbox" checked> Remember me</label><button type="button" class="forgot">Forgot password?</button></div>
+        <label>Email address<input type="email" id="ownerEmail" required autocomplete="username"></label>
+        <label>Password<div class="password-wrap"><input type="password" id="ownerPassword" required autocomplete="current-password"><button type="button" id="togglePassword" aria-label="Show password">◉</button></div></label>
+        <div class="form-meta"><label class="remember"><input type="checkbox" id="rememberEmail"> Remember email</label><button type="button" class="forgot" id="forgotPassword">Need help?</button></div>
         <button class="login-button" type="submit">Sign in to dashboard <span>→</span></button>
-        <p class="secure-note">🔒 Demo sign-in is stored locally in this browser.</p>
+        <p class="login-message" id="loginMessage" role="status" aria-live="polite"></p>
+        <p class="secure-note">Shop approval and credentials are stored in this browser only. This static demo is not secure authentication.</p>
+        <p class="apply-link">New shop owner? <a href="index.html?account=shop">Apply for an account</a></p>
       </form>
     </section>
   </main>
+  <script src="owner-auth.js"></script>
   <script>
+    const emailInput = document.getElementById('ownerEmail');
+    const rememberEmail = document.getElementById('rememberEmail');
+    const savedEmail = localStorage.getItem('nearbyOwnerEmail');
+    if (savedEmail) {
+      emailInput.value = savedEmail;
+      rememberEmail.checked = true;
+    }
+
+    function showLoginMessage(message, isError = true) {
+      const element = document.getElementById('loginMessage');
+      element.textContent = message;
+      element.classList.toggle('error', isError);
+      element.classList.toggle('success', !isError);
+    }
+
     document.getElementById('togglePassword').addEventListener('click', function () {
       const input = document.getElementById('ownerPassword');
       input.type = input.type === 'password' ? 'text' : 'password';
       this.textContent = input.type === 'password' ? '◉' : '○';
+      this.setAttribute('aria-label', input.type === 'password' ? 'Show password' : 'Hide password');
     });
-    document.getElementById('ownerLoginForm').addEventListener('submit', function (event) {
-      event.preventEvent?.();
+
+    document.getElementById('forgotPassword').addEventListener('click', function () {
+      showLoginMessage('Password resets need an administrator because this demo has no email or server service.');
+    });
+
+    document.getElementById('ownerLoginForm').addEventListener('submit', async function (event) {
       event.preventDefault();
-      const email = document.getElementById('ownerEmail').value.trim();
-      if (!email || !document.getElementById('ownerPassword').value) return;
-      const applications = JSON.parse(localStorage.getItem('nearbyShopApplications') || '[]');
-      const application = applications.find(item => String(item.email).toLowerCase() === email.toLowerCase());
-      if (email !== 'owner@nearby.com' && (!application || application.status !== 'approved')) {
-        alert(application ? 'Your shop account is pending approval or was not approved yet.' : 'No approved shop account was found for this email.');
-        return;
+      const email = emailInput.value.trim();
+      const password = document.getElementById('ownerPassword').value;
+      const button = this.querySelector('.login-button');
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+      showLoginMessage('');
+      try {
+        const owner = await window.loginShopOwner(email, password);
+        if (rememberEmail.checked) localStorage.setItem('nearbyOwnerEmail', email);
+        else localStorage.removeItem('nearbyOwnerEmail');
+        sessionStorage.setItem('nearbyOwnerSession', JSON.stringify(owner));
+        window.location.href = 'owner-dashboard.html';
+      } catch (error) {
+        showLoginMessage(error.message || 'Unable to sign in.');
+      } finally {
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
       }
-      sessionStorage.setItem('nearbyOwnerSession', JSON.stringify({ email, name: application?.shopName || 'City Electronics', loginAt: new Date().toISOString() }));
-      window.location.href = 'owner-dashboard.html';
     });
+
+    if (sessionStorage.getItem('nearbyOwnerSession')) {
+      try {
+        JSON.parse(sessionStorage.getItem('nearbyOwnerSession'));
+        window.location.replace('owner-dashboard.html');
+      } catch {
+        sessionStorage.removeItem('nearbyOwnerSession');
+      }
+    }
   </script>
 </body>
 </html>

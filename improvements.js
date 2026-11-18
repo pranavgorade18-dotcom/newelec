@@ -162,16 +162,36 @@ function demoGoogleLogin() {
     showToast('Backend authentication is not configured. This prototype cannot sign in a real account.', 'info');
 }
 
-function submitAuth(event) {
+async function submitAuth(event) {
     event.preventDefault();
-    const email = document.getElementById('authEmail').value;
+    const email = document.getElementById('authEmail').value.trim();
     const shop = document.getElementById('shopFields').classList.contains('visible');
     if (shop) {
-        showToast('Submission requires a verification backend and admin approval. No live account was created.', 'info');
+        const password = document.getElementById('shopPassword').value;
+        const confirmation = document.getElementById('shopPasswordConfirm').value;
+        if (password !== confirmation) {
+            showToast('Passwords do not match.', 'info');
+            document.getElementById('shopPasswordConfirm').focus();
+            return;
+        }
+        try {
+            await window.registerShopOwner({
+                email,
+                shopName: document.getElementById('shopName').value,
+                businessNumber: document.getElementById('businessNumber').value,
+                password
+            });
+        } catch (error) {
+            showToast(error.message || 'Could not save your application.', 'info');
+            return;
+        }
+        event.target.reset();
+        selectAuthType('customer');
+        closeAuthModal();
+        showToast('Shop application saved. Sign-in is enabled after admin approval.', 'success');
     } else {
         showToast('Email verification requires Firebase or another authentication backend.', 'info');
     }
-    closeAuthModal();
 }
 
 function submitVerifiedReview(event) {
@@ -188,6 +208,14 @@ function submitVerifiedReview(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    ['shopName', 'businessNumber', 'shopPassword', 'shopPasswordConfirm'].forEach(id => {
+        const field = document.getElementById(id);
+        if (field) field.disabled = true;
+    });
+    if (new URLSearchParams(window.location.search).get('account') === 'shop') {
+        openAuthModal();
+        selectAuthType('shop');
+    }
     const menuButton = document.getElementById('menuToggle');
     const navLinks = document.getElementById('navLinks');
     const dropdown = document.querySelector('.nav-dropdown');

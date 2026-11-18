@@ -143,13 +143,32 @@ window.catalogProducts = [];
             const discount = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
             const label = modelIndex === 0 ? "Bestseller" : modelIndex === 1 ? "Featured" : modelIndex === 2 ? "New Arrival" : null;
 
+            const imageSeed = id;
+            const imageSearchTerms = {
+                "Smartphones": "smartphone,mobile",
+                "Laptops & Computers": "laptop,computer",
+                "Headphones & Audio": "headphones,audio",
+                "Smartwatches": "smartwatch",
+                "Gaming Accessories": "gaming,controller",
+                "Mobile Accessories": "mobile,charger",
+                "Cameras & Photography": "camera,photography",
+                "TVs & Home Entertainment": "television,soundbar",
+                "Computer Accessories": "keyboard,mouse",
+                "Smart Home Devices": "smart,home",
+                "Storage Devices": "ssd,storage",
+                "Printers & Scanners": "printer,scanner",
+                "Networking Devices": "router,network",
+                "Tablets & E-Readers": "tablet,ereader",
+                "Electronic Components": "electronics,circuit"
+            };
+
             window.catalogProducts.push({
                 id,
                 name,
                 brand,
                 category,
                 icon: "📦",
-                image: `${categoryImages[category]}?auto=format&fit=crop&w=900&q=85`,
+                image: `https://loremflickr.com/900/900/${encodeURIComponent(imageSearchTerms[category])}?lock=${imageSeed}`,
                 originalPrice,
                 discountedPrice,
                 discount,

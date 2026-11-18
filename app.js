@@ -2225,8 +2225,9 @@ function renderFeaturedDeals(productList = products) {
 
     grid.innerHTML = featured.map(({ product, offers }) => {
         const price = Math.min(...offers.map(offer => offer.price));
+        const image = product.image || productImages[product.category] || 'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=85';
         return `<button class="featured-card" onclick="compareProduct(${product.id})">
-            <img src="${productImages[product.category]}" alt="${product.name}" loading="lazy">
+            <img src="${image}" alt="${product.name}" loading="eager" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=85';">
             <span><small>${product.brand}</small><strong>${product.name}</strong><b>₹${price.toLocaleString()}</b></span>
         </button>`;
     }).join('');

@@ -202,19 +202,42 @@ window.addEventListener('DOMContentLoaded', () => {
             option.textContent = brand;
             brandFilter?.appendChild(option);
         });
-    const categoryIcons = {
-        "Smartphones":"📱","Laptops & Computers":"💻","Headphones & Audio":"🎧","Smartwatches":"⌚",
-        "Gaming Accessories":"🎮","Mobile Accessories":"🔌","Cameras & Photography":"📷",
-        "TVs & Home Entertainment":"📺","Computer Accessories":"🖱️","Smart Home Devices":"🏠",
-        "Storage Devices":"💾","Printers & Scanners":"🖨️","Networking Devices":"🌐",
-        "Tablets & E-Readers":"📱","Electronic Components":"🔧"
-    };
+    const categoryConfig = [
+        ["Smartphones","smartphone","#2563eb","#dbeafe"],
+        ["Laptops","laptop","#7c3aed","#ede9fe"],
+        ["Headphones","headphones","#e11d48","#ffe4e6"],
+        ["Smartwatches","watch","#0891b2","#cffafe"],
+        ["Gaming","gamepad-2","#9333ea","#f3e8ff"],
+        ["Cameras","camera","#ea580c","#ffedd5"],
+        ["Speakers","speaker","#db2777","#fce7f3"],
+        ["Tablets","tablet","#4f46e5","#e0e7ff"],
+        ["Televisions","tv","#0284c7","#e0f2fe"],
+        ["Keyboards","keyboard","#475569","#e2e8f0"],
+        ["Computer Mouse","mouse","#0f766e","#ccfbf1"],
+        ["Chargers","plug-zap","#ca8a04","#fef9c3"],
+        ["Power Banks","battery-charging","#16a34a","#dcfce7"],
+        ["Cables","cable","#6366f1","#e0e7ff"],
+        ["Printers","printer","#b91c1c","#fee2e2"],
+        ["Storage Devices","hard-drive","#0369a1","#e0f2fe"],
+        ["Networking","router","#059669","#d1fae5"],
+        ["Smart Home","house-wifi","#7c3aed","#ede9fe"],
+        ["Electronic Components","circuit-board","#c2410c","#ffedd5"],
+        ["Accessories","shopping-bag","#be185d","#fce7f3"]
+    ];
     const categoryContainer = document.querySelector('.category-container');
     if (categoryContainer) {
-        categoryContainer.innerHTML = [...new Set(products.map(product => product.category))]
-            .sort((a, b) => a.localeCompare(b))
-            .map(category => `<button class="category" type="button" onclick="filterCategory('${category.replace(/'/g, "\\'")}')"><span>${categoryIcons[category] || '📦'}</span>${category}</button>`)
+        categoryContainer.innerHTML = categoryConfig
+            .map(([category, icon, accent, tint]) => {
+                const count = products.filter(product => product.category === category).length;
+                return `<button class="category" type="button" data-category="${category}" style="--category-accent:${accent};--category-tint:${tint}" onclick="filterCategory('${category.replace(/'/g, "\\'")}');return false;">
+                    <span class="category-icon-wrap"><i data-lucide="${icon}" aria-hidden="true"></i></span>
+                    <strong>${category}</strong>
+                    <span class="category-meta">${count} products</span>
+                    <span class="category-explore">Explore <b aria-hidden="true">→</b></span>
+                </button>`;
+            })
             .join('');
+        if (window.lucide) window.lucide.createIcons();
     }
     const searchCategory = document.getElementById('searchCategory');
     if (searchCategory) {
@@ -224,6 +247,16 @@ window.addEventListener('DOMContentLoaded', () => {
             option.value = category;
             option.textContent = category;
             searchCategory.appendChild(option);
+        });
+    }
+    const recommendCategory = document.getElementById('recommendCategory');
+    if (recommendCategory) {
+        [...recommendCategory.querySelectorAll('option:not([value=""])')].forEach(option => option.remove());
+        [...new Set(products.map(product => product.category))].sort((a, b) => a.localeCompare(b)).forEach(category => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            recommendCategory.appendChild(option);
         });
     }
     updateWishlistCount();

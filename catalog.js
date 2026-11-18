@@ -135,6 +135,37 @@ window.catalogProducts = [];
     Object.entries(categoryModels).forEach(([category, models], categoryIndex) => {
         models.forEach(([name, brand], modelIndex) => {
             id += 1;
+            let displayCategory = category;
+            if (category === "Laptops & Computers") {
+                displayCategory = modelIndex % 4 === 0 ? "Laptops" :
+                    modelIndex % 4 === 1 ? "Keyboards" :
+                    modelIndex % 4 === 2 ? "Computer Mouse" : "Accessories";
+            } else if (category === "Headphones & Audio") {
+                displayCategory = modelIndex % 3 === 0 ? "Headphones" :
+                    modelIndex % 3 === 1 ? "Speakers" : "Accessories";
+            } else if (category === "Mobile Accessories") {
+                displayCategory = modelIndex % 4 === 0 ? "Chargers" :
+                    modelIndex % 4 === 1 ? "Power Banks" :
+                    modelIndex % 4 === 2 ? "Cables" : "Accessories";
+            } else if (category === "Computer Accessories") {
+                displayCategory = modelIndex % 3 === 0 ? "Keyboards" :
+                    modelIndex % 3 === 1 ? "Computer Mouse" : "Accessories";
+            } else {
+                const simpleCategoryNames = {
+                    "Smartphones": "Smartphones",
+                    "Smartwatches": "Smartwatches",
+                    "Gaming Accessories": "Gaming",
+                    "Cameras & Photography": "Cameras",
+                    "TVs & Home Entertainment": "Televisions",
+                    "Smart Home Devices": "Smart Home",
+                    "Storage Devices": "Storage Devices",
+                    "Printers & Scanners": "Printers",
+                    "Networking Devices": "Networking",
+                    "Tablets & E-Readers": "Tablets",
+                    "Electronic Components": "Electronic Components"
+                };
+                displayCategory = simpleCategoryNames[category] || category;
+            }
             const basePrices = [3499, 4999, 7999, 12999, 24999, 49999, 89999];
             const base = basePrices[(categoryIndex + modelIndex) % basePrices.length] +
                 ((categoryIndex * 791 + modelIndex * 337) % 9000);
@@ -171,7 +202,7 @@ window.catalogProducts = [];
                 id,
                 name,
                 brand,
-                category,
+                category: displayCategory,
                 icon: "📦",
                 image: `https://loremflickr.com/900/900/${encodeURIComponent(productImageSearch)}?lock=${imageSeed}`,
                 fallbackImage,

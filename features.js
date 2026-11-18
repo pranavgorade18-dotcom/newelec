@@ -224,20 +224,41 @@ window.addEventListener('DOMContentLoaded', () => {
         ["Electronic Components","circuit-board","#c2410c","#ffedd5"],
         ["Accessories","shopping-bag","#be185d","#fce7f3"]
     ];
+    const categorySvg = {
+        smartphone: '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
+        laptop: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/>',
+        headphones: '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="13" width="4" height="7" rx="2"/><rect x="17" y="13" width="4" height="7" rx="2"/>',
+        watch: '<rect x="6" y="6" width="12" height="12" rx="4"/><path d="M9 2h6l1 4H8l1-4ZM8 18h8l-1 4H9l-1-4ZM9 12h6"/>',
+        "gamepad-2": '<path d="M6 11h4M8 9v4M15 11h.01M18 11h.01"/><path d="M7 5h10a5 5 0 0 1 4.8 6.4l-1.2 5.2a2.5 2.5 0 0 1-4.2 1.2L14 15H10l-2.4 2.8a2.5 2.5 0 0 1-4.2-1.2l-1.2-5.2A5 5 0 0 1 7 5Z"/>',
+        camera: '<path d="M14.5 4l2 3H21a1 1 0 0 1 1 1v11H2V8a1 1 0 0 1 1-1h4.5l2-3h5Z"/><circle cx="12" cy="13" r="4"/>',
+        speaker: '<rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="13" r="4"/><circle cx="12" cy="7" r="1"/><circle cx="12" cy="16" r="1"/>',
+        tablet: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>',
+        tv: '<rect x="2" y="4" width="20" height="15" rx="2"/><path d="M8 22h8M12 19v3"/>',
+        keyboard: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M10 13h.01M14 13h.01M18 13h.01M8 16h8"/>',
+        mouse: '<rect x="6" y="2" width="12" height="20" rx="6"/><path d="M12 2v7"/>',
+        "plug-zap": '<path d="M12 22v-5M9 8V2M15 8V2M7 8h10v3a5 5 0 0 1-10 0V8ZM13 10l-3 5h4l-3 4"/>',
+        "battery-charging": '<rect x="2" y="6" width="18" height="12" rx="2"/><path d="M22 10v4M12 8l-3 5h4l-3 5"/>',
+        cable: '<path d="M7 3v5a5 5 0 0 0 5 5h0a5 5 0 0 1 5 5v3M17 3v5a5 5 0 0 1-5 5M7 21v-3M17 21v-3"/>',
+        printer: '<path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7"/>',
+        "hard-drive": '<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="12" cy="12" r="3"/><path d="M7 17h.01M17 17h.01"/>',
+        router: '<rect x="3" y="10" width="18" height="8" rx="2"/><path d="M8 18v3M16 18v3M7 6a8 8 0 0 1 10 0M9.5 8.5a4 4 0 0 1 5 0"/>',
+        "house-wifi": '<path d="M3 11l9-8 9 8M5 10v10h14V10"/><path d="M12 17h.01M9 14a4.2 4.2 0 0 1 6 0M6.5 11.5a8 8 0 0 1 11 0"/>',
+        "circuit-board": '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>',
+        "shopping-bag": '<path d="M6 7h12l2 14H4L6 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/>'
+    };
     const categoryContainer = document.querySelector('.category-container');
     if (categoryContainer) {
         categoryContainer.innerHTML = categoryConfig
             .map(([category, icon, accent, tint]) => {
                 const count = products.filter(product => product.category === category).length;
                 return `<button class="category" type="button" data-category="${category}" style="--category-accent:${accent};--category-tint:${tint}" onclick="filterCategory('${category.replace(/'/g, "\\'")}');return false;">
-                    <span class="category-icon-wrap"><i data-lucide="${icon}" aria-hidden="true"></i></span>
+                    <span class="category-icon-wrap" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${categorySvg[icon] || categorySvg['shopping-bag']}</svg></span>
                     <strong>${category}</strong>
                     <span class="category-meta">${count} products</span>
                     <span class="category-explore">Explore <b aria-hidden="true">→</b></span>
                 </button>`;
             })
             .join('');
-        if (window.lucide) window.lucide.createIcons();
     }
     const searchCategory = document.getElementById('searchCategory');
     if (searchCategory) {

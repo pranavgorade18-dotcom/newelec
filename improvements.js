@@ -68,6 +68,8 @@ function sortProducts() {
     if (value === 'priceLow') sorted.sort((a, b) => lowestPrice(a) - lowestPrice(b));
     if (value === 'priceHigh') sorted.sort((a, b) => lowestPrice(b) - lowestPrice(a));
     if (value === 'rating') sorted.sort((a, b) => b.rating - a.rating);
+    if (value === 'newest') sorted.sort((a, b) => b.id - a.id);
+    if (value === 'bestseller') sorted.sort((a, b) => (b.label === 'Bestseller') - (a.label === 'Bestseller'));
     renderProducts(sorted);
     updateResultCount(sorted.length);
 }
@@ -88,7 +90,10 @@ function renderProducts(productList) {
         const wishlisted = window.wishlist && window.wishlist.includes(product.id);
         const card = document.createElement('article');
         card.className = 'product-card';
-        card.innerHTML = `<div class="product-image-wrap"><span class="availability-badge ${offers.length ? 'in-stock' : 'out-stock'}">${offers.length ? 'In stock' : 'Out of stock'}</span><button class="wishlist-button ${wishlisted ? 'active' : ''}" aria-label="Add product to wishlist" onclick="toggleWishlist(this, ${product.id})">${wishlisted ? '♥' : '♡'}</button><img src="${productImages[product.category]}" alt="${product.name}" class="product-image-real" loading="lazy"></div><div class="product-info"><p class="brand">${product.brand}</p><h3>${product.name}</h3><div class="product-rating"><span>★</span> ${product.rating} <small>Verified rating</small></div><p class="starting-label">${lowest ? 'Lowest nearby in-stock price' : 'Price unavailable'}</p><div class="price">${lowest ? '₹' + lowest.toLocaleString() : '—'}</div><label class="compare-checkbox"><input type="checkbox" onchange="toggleProductCompare(this, ${product.id})"> Add to compare</label><div class="product-buttons"><button class="primary-btn" onclick="compareProduct(${product.id})">Compare prices</button><button class="secondary-btn" onclick="openPriceAlert(${product.id})" aria-label="Create price alert">🔔</button><button class="secondary-btn" onclick="showSpecifications(${product.id})" aria-label="View specifications">ⓘ</button></div></div>`;
+        const original = product.originalPrice || Math.round((product.discountedPrice || lowest || product.price) * 1.16);
+        const current = product.discountedPrice || lowest || product.price;
+        const discount = product.discount || (original ? Math.round((1 - current / original) * 100) : 0);
+        card.innerHTML = `<div class="product-image-wrap">${product.label ? `<span class="label-badge">${product.label}</span>` : ''}<span class="availability-badge ${offers.length || product.stock ? 'in-stock' : 'out-stock'}">${offers.length || product.stock ? 'In stock' : 'Out of stock'}</span><button class="wishlist-button ${wishlisted ? 'active' : ''}" aria-label="Add product to wishlist" onclick="toggleWishlist(this, ${product.id})">${wishlisted ? '♥' : '♡'}</button><img src="${product.image || productImages[product.category]}" alt="${product.name}" class="product-image-real" loading="lazy"></div><div class="product-info"><p class="brand">${product.brand}</p><h3>${product.name}</h3><div class="product-rating"><span>★</span> ${product.rating} <small>${(product.reviewCount || 0).toLocaleString()} reviews</small></div><div class="price-row"><div><div class="price">₹${current.toLocaleString()}</div><del>₹${original.toLocaleString()}</del></div>${discount ? `<span class="discount-badge">${discount}% off</span>` : ''}</div><label class="compare-checkbox"><input type="checkbox" onchange="toggleProductCompare(this, ${product.id})"> Add to compare</label><div class="product-buttons"><button class="primary-btn" onclick="addToCart(${product.id})">Add to Cart</button><button class="secondary-btn" onclick="showSpecifications(${product.id})" aria-label="View product details">ⓘ</button><button class="secondary-btn" onclick="compareProduct(${product.id})" aria-label="Compare prices">⇄</button></div></div>`;
         container.appendChild(card);
     });
     renderFeaturedDeals(productList);

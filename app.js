@@ -2,7 +2,7 @@
        PRODUCT DATA
     ========================================================= */
 
-    const products = [
+    const legacyProducts = [
 
         {
             id: 1,
@@ -163,9 +163,199 @@
                 Resolution: "4K",
                 HDR: "Yes"
             }
+        },
+
+        {
+            id: 10,
+            name: "OnePlus 13",
+            brand: "OnePlus",
+            category: "Mobile",
+            icon: "📱",
+            price: 69999,
+            rating: 4.7,
+            description: "Flagship OnePlus smartphone with a high-resolution display.",
+            specifications: {
+                RAM: "12GB",
+                Storage: "256GB",
+                Display: "6.82 inch",
+                Camera: "50MP",
+                Battery: "6000mAh"
+            }
+        },
+
+        {
+            id: 11,
+            name: "Google Pixel 9",
+            brand: "Google",
+            category: "Mobile",
+            icon: "📱",
+            price: 79999,
+            rating: 4.6,
+            description: "Google smartphone with AI-powered photography features.",
+            specifications: {
+                RAM: "12GB",
+                Storage: "256GB",
+                Display: "6.3 inch",
+                Camera: "50MP",
+                Battery: "4700mAh"
+            }
+        },
+
+        {
+            id: 12,
+            name: "Xiaomi Redmi Note 14 Pro+",
+            brand: "Xiaomi",
+            category: "Mobile",
+            icon: "📱",
+            price: 31999,
+            rating: 4.5,
+            description: "Feature-packed Redmi smartphone with a fast-charging battery.",
+            specifications: {
+                RAM: "8GB",
+                Storage: "256GB",
+                Display: "6.67 inch",
+                Camera: "200MP",
+                Battery: "6200mAh"
+            }
+        },
+
+        {
+            id: 13,
+            name: "Motorola Edge 50 Pro",
+            brand: "Motorola",
+            category: "Mobile",
+            icon: "📱",
+            price: 31999,
+            rating: 4.4,
+            description: "Motorola smartphone with a pOLED display and versatile cameras.",
+            specifications: {
+                RAM: "8GB",
+                Storage: "256GB",
+                Display: "6.7 inch",
+                Camera: "50MP",
+                Battery: "4500mAh"
+            }
+        },
+
+        {
+            id: 14,
+            name: "Lenovo IdeaPad Slim 5",
+            brand: "Lenovo",
+            category: "Laptop",
+            icon: "💻",
+            price: 72990,
+            rating: 4.5,
+            description: "Slim Lenovo laptop for everyday work and study.",
+            specifications: {
+                RAM: "16GB",
+                Storage: "512GB SSD",
+                Processor: "AMD Ryzen 7",
+                Display: "14 inch"
+            }
+        },
+
+        {
+            id: 15,
+            name: "ASUS Vivobook 15",
+            brand: "ASUS",
+            category: "Laptop",
+            icon: "💻",
+            price: 58990,
+            rating: 4.4,
+            description: "Versatile ASUS laptop with a spacious Full HD display.",
+            specifications: {
+                RAM: "16GB",
+                Storage: "512GB SSD",
+                Processor: "Intel Core i5",
+                Display: "15.6 inch"
+            }
+        },
+
+        {
+            id: 16,
+            name: "Acer Aspire 5",
+            brand: "Acer",
+            category: "Laptop",
+            icon: "💻",
+            price: 54990,
+            rating: 4.3,
+            description: "Acer everyday laptop for productivity and entertainment.",
+            specifications: {
+                RAM: "16GB",
+                Storage: "512GB SSD",
+                Processor: "Intel Core i5",
+                Display: "15.6 inch"
+            }
+        },
+
+        {
+            id: 17,
+            name: "LG OLED evo C4 55-inch",
+            brand: "LG",
+            category: "TV",
+            icon: "📺",
+            price: 124990,
+            rating: 4.7,
+            description: "LG OLED 4K smart TV with vivid color and cinematic contrast.",
+            specifications: {
+                Screen: "55 inch",
+                Resolution: "4K",
+                SmartTV: "Yes",
+                HDR: "Dolby Vision"
+            }
+        },
+
+        {
+            id: 18,
+            name: "JBL Tune 770NC",
+            brand: "JBL",
+            category: "Headphones",
+            icon: "🎧",
+            price: 7999,
+            rating: 4.5,
+            description: "Wireless JBL headphones with adaptive noise cancelling.",
+            specifications: {
+                Type: "Over Ear",
+                ANC: "Yes",
+                Battery: "70 Hours"
+            }
+        },
+
+        {
+            id: 19,
+            name: "Nikon D7500",
+            brand: "Nikon",
+            category: "Camera",
+            icon: "📷",
+            price: 89999,
+            rating: 4.6,
+            description: "Versatile Nikon DSLR camera for photography and video.",
+            specifications: {
+                Sensor: "20.9MP",
+                Video: "4K UHD",
+                Lens: "18-140mm"
+            }
+        },
+
+        {
+            id: 20,
+            name: "Xbox Series X",
+            brand: "Microsoft",
+            category: "Gaming",
+            icon: "🎮",
+            price: 52990,
+            rating: 4.8,
+            description: "Microsoft gaming console with 4K gaming and fast load times.",
+            specifications: {
+                Storage: "1TB SSD",
+                Resolution: "4K",
+                HDR: "Yes"
+            }
         }
 
     ];
+
+    const products = window.catalogProducts?.length ? window.catalogProducts : legacyProducts;
 
 
     /* =========================================================
@@ -507,7 +697,51 @@
             price: 56999,
             stock: 1,
             warranty: "1 Year"
-        }
+        },
+
+        { productId: 10, shopId: 1, price: 70999, stock: 3, warranty: "1 Year" },
+        { productId: 10, shopId: 2, price: 69999, stock: 2, warranty: "1 Year" },
+        { productId: 10, shopId: 4, price: 70499, stock: 4, warranty: "1 Year" },
+
+        { productId: 11, shopId: 1, price: 80999, stock: 2, warranty: "1 Year" },
+        { productId: 11, shopId: 2, price: 79999, stock: 3, warranty: "1 Year" },
+        { productId: 11, shopId: 5, price: 80499, stock: 1, warranty: "1 Year" },
+
+        { productId: 12, shopId: 1, price: 32999, stock: 4, warranty: "1 Year" },
+        { productId: 12, shopId: 2, price: 31999, stock: 2, warranty: "1 Year" },
+        { productId: 12, shopId: 3, price: 32499, stock: 3, warranty: "1 Year" },
+
+        { productId: 13, shopId: 1, price: 32999, stock: 2, warranty: "1 Year" },
+        { productId: 13, shopId: 2, price: 31999, stock: 3, warranty: "1 Year" },
+        { productId: 13, shopId: 4, price: 32499, stock: 2, warranty: "1 Year" },
+
+        { productId: 14, shopId: 1, price: 73990, stock: 2, warranty: "1 Year" },
+        { productId: 14, shopId: 2, price: 72990, stock: 3, warranty: "1 Year" },
+        { productId: 14, shopId: 4, price: 73490, stock: 1, warranty: "1 Year" },
+
+        { productId: 15, shopId: 1, price: 59990, stock: 3, warranty: "1 Year" },
+        { productId: 15, shopId: 2, price: 58990, stock: 2, warranty: "1 Year" },
+        { productId: 15, shopId: 3, price: 59490, stock: 4, warranty: "1 Year" },
+
+        { productId: 16, shopId: 1, price: 55990, stock: 2, warranty: "1 Year" },
+        { productId: 16, shopId: 2, price: 54990, stock: 3, warranty: "1 Year" },
+        { productId: 16, shopId: 5, price: 55490, stock: 2, warranty: "1 Year" },
+
+        { productId: 17, shopId: 1, price: 126990, stock: 1, warranty: "2 Years" },
+        { productId: 17, shopId: 2, price: 124990, stock: 2, warranty: "2 Years" },
+        { productId: 17, shopId: 4, price: 125990, stock: 1, warranty: "2 Years" },
+
+        { productId: 18, shopId: 1, price: 8299, stock: 4, warranty: "1 Year" },
+        { productId: 18, shopId: 2, price: 7999, stock: 3, warranty: "1 Year" },
+        { productId: 18, shopId: 3, price: 8199, stock: 2, warranty: "1 Year" },
+
+        { productId: 19, shopId: 1, price: 90999, stock: 1, warranty: "2 Years" },
+        { productId: 19, shopId: 2, price: 89999, stock: 2, warranty: "2 Years" },
+        { productId: 19, shopId: 4, price: 90499, stock: 1, warranty: "2 Years" },
+
+        { productId: 20, shopId: 1, price: 53990, stock: 2, warranty: "1 Year" },
+        { productId: 20, shopId: 2, price: 52990, stock: 3, warranty: "1 Year" },
+        { productId: 20, shopId: 3, price: 53490, stock: 1, warranty: "1 Year" }
 
     ];
 
@@ -597,7 +831,19 @@
     };
 
     function getInStockOffers(productId) {
-        return shopProducts.filter(offer => offer.productId === productId && offer.stock > 0);
+        const existing = shopProducts.filter(offer => offer.productId === productId && offer.stock > 0);
+        if (existing.length) return existing;
+        const product = products.find(item => item.id === productId);
+        if (!product) return [];
+        const source = shops.map((shop, index) => ({
+            productId,
+            shopId: shop.id,
+            shop,
+            price: product.discountedPrice + index * 299 + (index % 2 ? 99 : 0),
+            stock: product.stock,
+            warranty: "Retailer warranty terms vary"
+        }));
+        return source.filter(offer => offer.stock > 0).slice(0, 3);
     }
 
     function renderProducts(productList) {
@@ -620,7 +866,7 @@
                 <div class="product-image-wrap">
                     <span class="availability-badge ${offers.length ? "in-stock" : "out-stock"}">${offers.length ? "In stock" : "Out of stock"}</span>
                     <button class="wishlist-button" aria-label="Add ${product.name} to wishlist" onclick="toggleWishlist(this, ${product.id})">♡</button>
-                    <img src="${productImages[product.category]}" alt="${product.name}" class="product-image-real" loading="lazy">
+                    <img src="${product.image || productImages[product.category]}" alt="${product.name}" class="product-image-real" loading="lazy">
                 </div>
                 <div class="product-info">
                     <p class="brand">${product.brand}</p>
@@ -809,16 +1055,12 @@
 
 
         const offers =
-            shopProducts
-
-                .filter(
-                    item =>
-                        item.productId === productId
-                )
+            getInStockOffers(productId)
 
                 .map(item => {
 
                     const shop =
+                        item.shop ||
                         shops.find(
                             s =>
                                 s.id === item.shopId
@@ -1649,11 +1891,24 @@
         );
 
 
-        alert(
-            `${product.name}\n\n` +
-            `${product.description}\n\n` +
-            `${specifications}`
-        );
+        openFeatureModal(product.name, 'PRODUCT DETAILS', `
+            <div class="product-detail">
+                <img src="${product.image || productImages[product.category]}" alt="${product.name}">
+                <div>
+                    <p>${product.brand} · ${product.category}</p>
+                    <h3>${product.name}</h3>
+                    <p>${product.description}</p>
+                    <div class="detail-price"><strong>₹${(product.discountedPrice || product.price).toLocaleString()}</strong>${product.originalPrice ? `<del>₹${product.originalPrice.toLocaleString()}</del>` : ''}</div>
+                    <div class="detail-actions">
+                        <button class="primary-btn" onclick="addToCart(${product.id})">Add to cart</button>
+                        <button class="secondary-btn" onclick="toggleWishlist(this,${product.id})">♡ Wishlist</button>
+                        <button class="secondary-btn" onclick="compareProduct(${product.id})">Compare</button>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-specifications">${Object.entries(product.specifications).map(([key,value]) => `<div><strong>${key}</strong><span>${value}</span></div>`).join('')}</div>
+            ${renderRelatedProducts(product)}
+        `);
 
     }
 

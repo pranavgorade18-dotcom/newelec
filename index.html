@@ -35,6 +35,7 @@
 
     <ul id="navLinks" class="nav-links">
         <li><a href="#home" class="nav-link active" data-nav-target="home">Home</a></li>
+        <li><button class="nav-link" type="button" onclick="openCart()">Cart <span id="cartCount" class="nav-count">0</span></button></li>
         <li><a href="#categories" class="nav-link" data-nav-target="categories" onclick="showNearbyShops(); return false;">Nearby Shops</a></li>
         <li><a href="#comparisonSection" class="nav-link" data-nav-target="comparisonSection" onclick="scrollToComparison(); return false;">Compare</a></li>
         <li class="nav-dropdown">
@@ -165,49 +166,7 @@
     </div>
 
     <div class="category-container">
-
-        <div
-            class="category"
-            onclick="filterCategory('Mobile')"
-        >
-            📱 Mobiles
-        </div>
-
-        <div
-            class="category"
-            onclick="filterCategory('Laptop')"
-        >
-            💻 Laptops
-        </div>
-
-        <div
-            class="category"
-            onclick="filterCategory('TV')"
-        >
-            📺 TVs
-        </div>
-
-        <div
-            class="category"
-            onclick="filterCategory('Headphones')"
-        >
-            🎧 Headphones
-        </div>
-
-        <div
-            class="category"
-            onclick="filterCategory('Camera')"
-        >
-            📷 Cameras
-        </div>
-
-        <div
-            class="category"
-            onclick="filterCategory('Gaming')"
-        >
-            🎮 Gaming
-        </div>
-
+        <!-- Categories are populated from catalog.js -->
     </div>
 
 </section>
@@ -256,6 +215,8 @@
                 <option value="rating">
                     Rating
                 </option>
+                <option value="newest">Newest arrivals</option>
+                <option value="bestseller">Bestsellers</option>
 
             </select>
 
@@ -264,8 +225,9 @@
     </div>
 
     <div class="advanced-filters">
-        <label>Brand<select id="brandFilter" onchange="applyAdvancedFilters()"><option value="">All brands</option><option>Samsung</option><option>Apple</option><option>HP</option><option>Dell</option><option>Sony</option><option>Canon</option></select></label>
+        <label>Brand<select id="brandFilter" onchange="applyAdvancedFilters()"><option value="">All brands</option></select></label>
         <label>Min rating<select id="ratingFilter" onchange="applyAdvancedFilters()"><option value="0">Any rating</option><option value="4.5">4.5+</option><option value="4.7">4.7+</option><option value="4.8">4.8+</option></select></label>
+        <label>Minimum price<input id="minPriceFilter" type="number" placeholder="₹ 0" oninput="applyAdvancedFilters()"></label>
         <label>Max price<input id="productPriceFilter" type="number" placeholder="e.g. 70000" oninput="applyAdvancedFilters()"></label>
         <label>Nearby radius<select id="radiusFilter" onchange="applyAdvancedFilters()"><option value="999">Any radius</option><option value="2">Within 2 km</option><option value="5">Within 5 km</option><option value="10">Within 10 km</option></select></label>
         <button class="filter-reset" onclick="resetAdvancedFilters()">Reset</button>
@@ -275,7 +237,7 @@
         <div><p class="eyebrow">SMART MATCH</p><h3>Find the right electronics</h3></div>
         <div class="recommendation-controls">
             <label>Budget<input id="recommendBudget" type="number" placeholder="₹ 60000"></label>
-            <label>Category<select id="recommendCategory"><option value="">Any</option><option>Mobile</option><option>Laptop</option><option>TV</option><option>Headphones</option><option>Camera</option><option>Gaming</option></select></label>
+            <label>Category<select id="recommendCategory"><option value="">Any</option><option>Smartphones</option><option>Laptops &amp; Computers</option><option>Headphones &amp; Audio</option><option>Smartwatches</option><option>Gaming Accessories</option><option>Mobile Accessories</option><option>Cameras &amp; Photography</option><option>TVs &amp; Home Entertainment</option><option>Computer Accessories</option><option>Smart Home Devices</option><option>Storage Devices</option><option>Printers &amp; Scanners</option><option>Networking Devices</option><option>Tablets &amp; E-Readers</option><option>Electronic Components</option></select></label>
             <button class="primary-btn" onclick="recommendProducts()">Recommend</button>
         </div>
         <div id="recommendationResults"></div>
@@ -475,6 +437,7 @@
 
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="catalog.js"></script>
     <script src="app.js"></script>
     <script src="features.js"></script>
     <script src="improvements.js"></script>

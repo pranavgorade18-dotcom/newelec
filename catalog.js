@@ -145,22 +145,23 @@ window.catalogProducts = [];
 
             const imageSeed = id;
             const imageSearchTerms = {
-                "Smartphones": "smartphone,mobile",
-                "Laptops & Computers": "laptop,computer",
-                "Headphones & Audio": "headphones,audio",
+                "Smartphones": "smartphone",
+                "Laptops & Computers": "laptop",
+                "Headphones & Audio": "headphones",
                 "Smartwatches": "smartwatch",
-                "Gaming Accessories": "gaming,controller",
-                "Mobile Accessories": "mobile,charger",
-                "Cameras & Photography": "camera,photography",
-                "TVs & Home Entertainment": "television,soundbar",
-                "Computer Accessories": "keyboard,mouse",
-                "Smart Home Devices": "smart,home",
-                "Storage Devices": "ssd,storage",
-                "Printers & Scanners": "printer,scanner",
-                "Networking Devices": "router,network",
-                "Tablets & E-Readers": "tablet,ereader",
-                "Electronic Components": "electronics,circuit"
+                "Gaming Accessories": "gaming",
+                "Mobile Accessories": "mobile accessories",
+                "Cameras & Photography": "camera",
+                "TVs & Home Entertainment": "television",
+                "Computer Accessories": "computer accessories",
+                "Smart Home Devices": "smart home",
+                "Storage Devices": "storage drive",
+                "Printers & Scanners": "printer",
+                "Networking Devices": "router",
+                "Tablets & E-Readers": "tablet",
+                "Electronic Components": "circuit board"
             };
+            const productImageSearch = `${name},${brand},${imageSearchTerms[category]}`;
 
             window.catalogProducts.push({
                 id,
@@ -168,7 +169,7 @@ window.catalogProducts = [];
                 brand,
                 category,
                 icon: "📦",
-                image: `https://loremflickr.com/900/900/${encodeURIComponent(imageSearchTerms[category])}?lock=${imageSeed}`,
+                image: `https://loremflickr.com/900/900/${encodeURIComponent(productImageSearch)}?lock=${imageSeed}`,
                 originalPrice,
                 discountedPrice,
                 discount,

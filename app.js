@@ -866,7 +866,7 @@
                 <div class="product-image-wrap">
                     <span class="availability-badge ${offers.length ? "in-stock" : "out-stock"}">${offers.length ? "In stock" : "Out of stock"}</span>
                     <button class="wishlist-button" aria-label="Add ${product.name} to wishlist" onclick="toggleWishlist(this, ${product.id})">♡</button>
-                    <img src="${product.image || productImages[product.category]}" alt="${product.name}" class="product-image-real" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=85';">
+                    <img src="${product.image || productImages[product.category]}" alt="${product.name}" class="product-image-real" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=${JSON.stringify(product.fallbackImage || '')};">
                 </div>
                 <div class="product-info">
                     <p class="brand">${product.brand}</p>
@@ -1893,7 +1893,7 @@
 
         openFeatureModal(product.name, 'PRODUCT DETAILS', `
             <div class="product-detail">
-                <img src="${product.image || productImages[product.category]}" alt="${product.name}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=85';">
+                <img src="${product.image || productImages[product.category]}" alt="${product.name}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=${JSON.stringify(product.fallbackImage || '')};">
                 <div>
                     <p>${product.brand} · ${product.category}</p>
                     <h3>${product.name}</h3>
@@ -2225,9 +2225,9 @@ function renderFeaturedDeals(productList = products) {
 
     grid.innerHTML = featured.map(({ product, offers }) => {
         const price = Math.min(...offers.map(offer => offer.price));
-        const image = product.image || productImages[product.category] || 'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=85';
+        const image = product.image || product.fallbackImage || productImages[product.category];
         return `<button class="featured-card" onclick="compareProduct(${product.id})">
-            <img src="${image}" alt="${product.name}" loading="eager" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=85';">
+            <img src="${image}" alt="${product.name}" loading="eager" onerror="this.onerror=null;this.src=${JSON.stringify(product.fallbackImage || '')};">
             <span><small>${product.brand}</small><strong>${product.name}</strong><b>₹${price.toLocaleString()}</b></span>
         </button>`;
     }).join('');

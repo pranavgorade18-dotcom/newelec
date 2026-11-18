@@ -162,6 +162,10 @@ window.catalogProducts = [];
                 "Electronic Components": "circuit board"
             };
             const productImageSearch = `${name},${brand},${imageSearchTerms[category]}`;
+            const safeName = name.replace(/[&<>"']/g, '');
+            const safeBrand = brand.replace(/[&<>"']/g, '');
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dbeafe"/><stop offset=".55" stop-color="#eef2ff"/><stop offset="1" stop-color="#ede9fe"/></linearGradient></defs><rect width="900" height="900" rx="48" fill="url(#g)"/><circle cx="450" cy="290" r="150" fill="#fff" opacity=".92"/><text x="450" y="315" text-anchor="middle" font-family="Arial" font-size="118" fill="#1677ff">${String.fromCodePoint(128230 + (id % 12))}</text><rect x="90" y="520" width="720" height="210" rx="28" fill="#fff" opacity=".94"/><text x="450" y="590" text-anchor="middle" font-family="Arial" font-weight="700" font-size="34" fill="#1677ff">${safeBrand}</text><text x="450" y="650" text-anchor="middle" font-family="Arial" font-weight="700" font-size="42" fill="#172033">${safeName.length > 26 ? safeName.slice(0, 26) + '...' : safeName}</text><text x="450" y="705" text-anchor="middle" font-family="Arial" font-size="26" fill="#64748b">${category}</text></svg>`;
+            const fallbackImage = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 
             window.catalogProducts.push({
                 id,
@@ -170,6 +174,7 @@ window.catalogProducts = [];
                 category,
                 icon: "📦",
                 image: `https://loremflickr.com/900/900/${encodeURIComponent(productImageSearch)}?lock=${imageSeed}`,
+                fallbackImage,
                 originalPrice,
                 discountedPrice,
                 discount,

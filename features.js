@@ -30,7 +30,7 @@ function closeFeatureModal() { document.getElementById('featureModal').classList
 
 function openWishlist() {
     const saved = products.filter(product => window.wishlist.includes(product.id));
-    const html = saved.length ? saved.map(product => `<div class="wishlist-row"><img src="${productImages[product.category]}" alt="${product.name}"><div><strong>${product.name}</strong><span>${product.brand}</span></div><button onclick="toggleWishlist(document.querySelector('.wishlist-button'),${product.id});openWishlist()">Remove</button><button onclick="compareProduct(${product.id});closeFeatureModal()">View prices</button></div>`).join('') : '<div class="empty-state compact"><h3>Your wishlist is empty</h3><p>Tap the heart on a product to save it here.</p></div>';
+    const html = saved.length ? saved.map(product => `<div class="wishlist-row"><img src="${product.image || product.fallbackImage || productImages[product.category]}" alt="${product.name}" onerror="this.onerror=null;this.src=${JSON.stringify(product.fallbackImage || '')};"><div><strong>${product.name}</strong><span>${product.brand}</span></div><button onclick="toggleWishlist(document.querySelector('.wishlist-button'),${product.id});openWishlist()">Remove</button><button onclick="compareProduct(${product.id});closeFeatureModal()">View prices</button></div>`).join('') : '<div class="empty-state compact"><h3>Your wishlist is empty</h3><p>Tap the heart on a product to save it here.</p></div>';
     openFeatureModal('Saved products', 'WISHLIST', html);
 }
 
@@ -178,7 +178,7 @@ function openCart() {
         const product = products.find(candidate => candidate.id === item.productId);
         if (!product) return '';
         const price = product.discountedPrice || product.price;
-        return `<div class="cart-row"><img src="${product.image || productImages[product.category]}" alt="${product.name}"><div><strong>${product.name}</strong><span>${product.brand}</span><b>₹${(price * item.quantity).toLocaleString()}</b></div><div class="quantity-controls"><button onclick="changeCartQuantity(${product.id},-1)">−</button><span>${item.quantity}</span><button onclick="changeCartQuantity(${product.id},1)">+</button></div><button class="remove-cart" onclick="removeFromCart(${product.id})">Remove</button></div>`;
+        return `<div class="cart-row"><img src="${product.image || product.fallbackImage || productImages[product.category]}" alt="${product.name}" onerror="this.onerror=null;this.src=${JSON.stringify(product.fallbackImage || '')};"><div><strong>${product.name}</strong><span>${product.brand}</span><b>₹${(price * item.quantity).toLocaleString()}</b></div><div class="quantity-controls"><button onclick="changeCartQuantity(${product.id},-1)">−</button><span>${item.quantity}</span><button onclick="changeCartQuantity(${product.id},1)">+</button></div><button class="remove-cart" onclick="removeFromCart(${product.id})">Remove</button></div>`;
     }).join('');
     const total = window.cart.reduce((sum, item) => {
         const product = products.find(candidate => candidate.id === item.productId);
@@ -189,7 +189,7 @@ function openCart() {
 
 function renderRelatedProducts(product) {
     const related = products.filter(candidate => candidate.category === product.category && candidate.id !== product.id).slice(0, 4);
-    return related.length ? `<div class="related-products"><h3>Related products</h3><div>${related.map(item => `<button onclick="showSpecifications(${item.id})"><img src="${item.image || productImages[item.category]}" alt="${item.name}"><strong>${item.name}</strong><span>₹${(item.discountedPrice || item.price).toLocaleString()}</span></button>`).join('')}</div></div>` : '';
+    return related.length ? `<div class="related-products"><h3>Related products</h3><div>${related.map(item => `<button onclick="showSpecifications(${item.id})"><img src="${item.image || item.fallbackImage || productImages[item.category]}" alt="${item.name}" onerror="this.onerror=null;this.src=${JSON.stringify(item.fallbackImage || '')};"><strong>${item.name}</strong><span>₹${(item.discountedPrice || item.price).toLocaleString()}</span></button>`).join('')}</div></div>` : '';
 }
 
 window.addEventListener('DOMContentLoaded', () => {
